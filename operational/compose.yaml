@@ -1,14 +1,14 @@
 services:
-  postgres:
+  operational-postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-petroedge}
-      POSTGRES_USER: ${POSTGRES_USER:-petroedge}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-petroedge_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-operational}
+      POSTGRES_USER: ${POSTGRES_USER:-operational}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-operational_dev}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - operational-postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 2s
@@ -17,4 +17,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres-data:
+  operational-postgres-data:
