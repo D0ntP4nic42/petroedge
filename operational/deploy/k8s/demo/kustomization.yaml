@@ -1,0 +1,8 @@
+resources:
+  - ../base/
+
+namespace: petroedge
+
+images:
+  - name: operational
+    newTag: latest
