@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operational
+  namespace: petroedge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: operational
+  template:
+    metadata:
+      labels:
+        service: operational
+    spec:
+      initContainers:
+        - name: migrate
+          image: operational:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /app/bin/operational
+            - eval
+            - Operational.Release.migrate()
+          envFrom:
+            - configMapRef:
+                name: operational-config
+            - secretRef:
+                name: operational-secret
+      containers:
+        - name: operational
+          image: operational:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: grpc
+              containerPort: 50051
+          envFrom:
+            - configMapRef:
+                name: operational-config
+            - secretRef:
+                name: operational-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi

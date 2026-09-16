@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operational-postgres
+  namespace: petroedge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: operational-postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: operational-postgres
+    spec:
+      containers:
+        - name: operational-postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          livenessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - pg_isready -h localhost -p 5432
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - pg_isready -h localhost -p 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          envFrom:
+            - configMapRef:
+                name: operational-postgres-config
+            - secretRef:
+                name: operational-postgres-secret
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: operational-postgres-vol
+              subPath: data
+      volumes:
+        - name: operational-postgres-vol
+          persistentVolumeClaim:
+            claimName: operational-postgres

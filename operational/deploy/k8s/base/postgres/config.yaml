@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: operational-postgres-config
+  namespace: petroedge
+data:
+  POSTGRES_DB: operational
+  POSTGRES_USER: operational
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: operational-postgres-secret
+  namespace: petroedge
+stringData:
+  POSTGRES_PASSWORD: operational_dev
